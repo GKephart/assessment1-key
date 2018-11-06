@@ -2,6 +2,7 @@
 
 namespace Captains\Interview;
 
+require_once("autoload.php");
 
 /**
  * Straight foreword php Class. The class instantiates and is error free but my need some modifications.
@@ -43,7 +44,6 @@ class Post {
 	 * @param string $newPostContent unsanitized value passed to the setPostContent() method.
 	 * @param \DateTime $newPostDate unsanitized value passed to the setPostDate() method.
 	 * @param string $newPostTitle unsanitized value passed to the setPostTitle() method.
-	 *
 	 **/
 	public function __construct( string $newPostAuthor, string $newPostContent, \DateTime $newPostDate, string $newPostTitle ) {
 
@@ -59,7 +59,7 @@ class Post {
 	}
 
 	/**
-	 * accessor method for $postAuthor
+	 * accessor method for postAuthor
 	 * @return string value of postAuthor.
 	 */
 	public function getPostAuthor(): string {
@@ -69,17 +69,17 @@ class Post {
 	/**
 	 * mutator method for postAuthor
 	 * @param string $newPostAuthor new value for postAuthor.
-	 * @throws \InvalidArgumentException if the post author is empty or insecure.
+	 * @throws \InvalidArgumentException if the postAuthor is empty or insecure.
 	 * @throws \RangeException if the postAuthor is longer than 24 characters.
 	 */
 	public function setPostAuthor(string $newPostAuthor): void {
 
 		if(empty($newPostAuthor) === true) {
-			throw(new \InvalidArgumentException("tweet content is empty or insecure"));
+			throw(new \InvalidArgumentException("post author is empty or insecure"));
 		}
 
 		if(strlen($newPostAuthor) > 24) {
-			throw(new \RangeException("tweet content too large"));
+			throw(new \RangeException("post author is too large"));
 		}
 
 
@@ -98,24 +98,24 @@ class Post {
 	/**
 	 * mutator method for post content.
 	 * @param string $newPostContent new value for postContent.
-	 * @throws \InvalidArgumentException if the post content is empty or insecure.
-	 * @throws \RangeException if the post content is longer than 1024 characters.
+	 * @throws \InvalidArgumentException if the postContent is empty or insecure.
+	 * @throws \RangeException if the postContent is longer than 1024 characters.
 	 */
 	public function setPostContent(string $newPostContent): void {
 
 		if(empty($newPostContent) === true) {
-			throw(new \InvalidArgumentException("tweet content is empty or insecure"));
+			throw(new \InvalidArgumentException("post content is empty or insecure"));
 		}
 
 		if(strlen($newPostContent) > 1024) {
-			throw(new \RangeException("tweet content too large"));
+			throw(new \RangeException("post content is too large"));
 		}
 
 		$this->postContent = $newPostContent;
 	}
 
 	/**
-	 * accessor method for post date.
+	 * accessor method for postDate.
 	 * @return \DateTime value of postDate
 	 **/
 	public function getPostDate(): \DateTime {
@@ -123,7 +123,7 @@ class Post {
 	}
 
 	/**
-	 * mutator method for post date
+	 * mutator method for postDate
 	 * @param \DateTime $newPostDate new value for postDate
 	 * @throws \InvalidArgumentException if newPostDate is not a valid object
 	 * @throws \RangeException if newPostDate is not a valid datetime
@@ -151,21 +151,19 @@ class Post {
 	}
 
 	/**
-	 * @param string $newPostTitle new value for post title.
+	 * @param string $newPostTitle new value for postTitle.
 	 * @throws \InvalidArgumentException if the postTitle is empty or insecure.
 	 * @throws \RangeException if the postTitle is longer than 24 characters.
 	 *
 	 */
 	public function setPostTitle(string $newPostTitle): void {
 		if(empty($newPostTitle) === true) {
-			throw(new \InvalidArgumentException("tweet content is empty or insecure"));
+			throw(new \InvalidArgumentException("post title is empty or insecure"));
 		}
 
 		if(strlen($newPostTitle) > 24) {
-			throw(new \RangeException("tweet content too large"));
+			throw(new \RangeException("post title is too large"));
 		}
 		$this->postTitle = $newPostTitle;
 	}
-
-
 }
