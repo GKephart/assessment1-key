@@ -125,6 +125,9 @@ class Post {
 	/**
 	 * mutator method for post date
 	 * @param \DateTime $newPostDate new value for postDate
+	 * @throws \InvalidArgumentException if newPostDate is not a valid object
+	 * @throws \RangeException if newPostDate is not a valid datetime
+	 *
 	 */
 	public function setPostDate(\DateTime $newPostDate): void {
 
@@ -140,18 +143,28 @@ class Post {
 	}
 
 	/**
-	 *
-	 * @return string
+	 *accessor method for postTitle
+	 * @return string value of postTitle
 	 */
 	public function getPostTitle(): string {
 		return $this->postTitle;
 	}
 
 	/**
-	 * @param string $postTitle
+	 * @param string $newPostTitle new value for post title.
+	 * @throws \InvalidArgumentException if the postTitle is empty or insecure.
+	 * @throws \RangeException if the postTitle is longer than 24 characters.
+	 *
 	 */
-	public function setPostTitle(string $postTitle): void {
-		$this->postTitle = $postTitle;
+	public function setPostTitle(string $newPostTitle): void {
+		if(empty($newPostTitle) === true) {
+			throw(new \InvalidArgumentException("tweet content is empty or insecure"));
+		}
+
+		if(strlen($newPostTitle) > 24) {
+			throw(new \RangeException("tweet content too large"));
+		}
+		$this->postTitle = $newPostTitle;
 	}
 
 
