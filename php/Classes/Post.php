@@ -46,10 +46,15 @@ class Post {
 	 *
 	 **/
 	public function __construct( string $newPostAuthor, string $newPostContent, \DateTime $newPostDate, string $newPostTitle ) {
+
 		try{
-			//stubbed
+			$this->setPostAuthor($newPostAuthor);
+			$this->setPostContent($newPostContent);
+			$this->setQuoteDate($newPostDate);
+			$this->setPostTitle($newPostTitle);
 		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
-			//stubbed
+			$exceptionType = get_class($exception);
+			throw(new $exceptionType($exception->getMessage(), 0, $exception));
 		}
 	}
 
