@@ -5,7 +5,7 @@ namespace Captains\Interview;
 require_once("autoload.php");
 
 /**
- * Straight foreword php Class. The class instantiates and is error free but my need some modifications.
+ * Straight foreword php Class. The class instantiates and is error free .
  *
  **/
 
