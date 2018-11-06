@@ -60,7 +60,7 @@ class Post {
 
 	/**
 	 * accessor method for $postAuthor
-	 * @return string value of the post author.
+	 * @return string value of post author.
 	 */
 	public function getPostAuthor(): string {
 		return $this->postAuthor;
@@ -68,25 +68,50 @@ class Post {
 
 	/**
 	 * mutator method for postAuthor
-	 * @param string $postAuthor mutator method for the new value of postAuthor.
+	 * @param string $newPostAuthor mutator method for the new value of postAuthor.
+	 * @throws \InvalidArgumentException if the post author is empty or insecure.
+	 * @throws \RangeException if the postAuthor is longer than 24 characters.
 	 */
-	public function setPostAuthor(string $postAuthor): void {
-		$this->postAuthor = $postAuthor;
+	public function setPostAuthor(string $newPostAuthor): void {
+
+		if(empty($newPostAuthor) === true) {
+			throw(new \InvalidArgumentException("tweet content is empty or insecure"));
+		}
+
+		if(strlen($newPostAuthor) > 24) {
+			throw(new \RangeException("tweet content too large"));
+		}
+
+
+		$this->postAuthor = $newPostAuthor;
 	}
 
 	/**
+	 * accessor method for postContent.
 	 *
-	 * @return string
+	 * @return string value of post content
 	 */
 	public function getPostContent(): string {
 		return $this->postContent;
 	}
 
 	/**
-	 * @param string $postContent
+	 * mutator method for post content.
+	 * @param string $newPostContent mutator method for the new value of postContent.
+	 * @throws \InvalidArgumentException if the post content is empty or insecure.
+	 * @throws \RangeException if the post content is longer than 1024 characters.
 	 */
-	public function setPostContent(string $postContent): void {
-		$this->postContent = $postContent;
+	public function setPostContent(string $newPostContent): void {
+
+		if(empty($newPostContent) === true) {
+			throw(new \InvalidArgumentException("tweet content is empty or insecure"));
+		}
+
+		if(strlen($newPostContent) > 1024) {
+			throw(new \RangeException("tweet content too large"));
+		}
+
+		$this->postContent = $newPostContent;
 	}
 
 	/**
