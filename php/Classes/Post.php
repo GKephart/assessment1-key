@@ -59,20 +59,23 @@ class Post {
 	}
 
 	/**
-	 * @return string
+	 * accessor method for $postAuthor
+	 * @return string value of the post author.
 	 */
 	public function getPostAuthor(): string {
 		return $this->postAuthor;
 	}
 
 	/**
-	 * @param string $postAuthor
+	 * mutator method for postAuthor
+	 * @param string $postAuthor mutator method for the new value of postAuthor.
 	 */
 	public function setPostAuthor(string $postAuthor): void {
 		$this->postAuthor = $postAuthor;
 	}
 
 	/**
+	 *
 	 * @return string
 	 */
 	public function getPostContent(): string {
