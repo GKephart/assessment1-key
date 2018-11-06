@@ -27,7 +27,7 @@ class Post {
 	 * Date for the quote.
 	 * @var \DateTime $postDate
 	 **/
-	private $quoteDate;
+	private $postDate;
 
 	/**
 	 * title for the quote
@@ -50,7 +50,7 @@ class Post {
 		try{
 			$this->setPostAuthor($newPostAuthor);
 			$this->setPostContent($newPostContent);
-			$this->setQuoteDate($newPostDate);
+			$this->setPostDate($newPostDate);
 			$this->setPostTitle($newPostTitle);
 		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
 			$exceptionType = get_class($exception);
@@ -60,7 +60,7 @@ class Post {
 
 	/**
 	 * accessor method for $postAuthor
-	 * @return string value of post author.
+	 * @return string value of postAuthor.
 	 */
 	public function getPostAuthor(): string {
 		return $this->postAuthor;
@@ -68,7 +68,7 @@ class Post {
 
 	/**
 	 * mutator method for postAuthor
-	 * @param string $newPostAuthor mutator method for the new value of postAuthor.
+	 * @param string $newPostAuthor new value for postAuthor.
 	 * @throws \InvalidArgumentException if the post author is empty or insecure.
 	 * @throws \RangeException if the postAuthor is longer than 24 characters.
 	 */
@@ -89,7 +89,7 @@ class Post {
 	/**
 	 * accessor method for postContent.
 	 *
-	 * @return string value of post content
+	 * @return string value of postContent
 	 */
 	public function getPostContent(): string {
 		return $this->postContent;
@@ -97,7 +97,7 @@ class Post {
 
 	/**
 	 * mutator method for post content.
-	 * @param string $newPostContent mutator method for the new value of postContent.
+	 * @param string $newPostContent new value for postContent.
 	 * @throws \InvalidArgumentException if the post content is empty or insecure.
 	 * @throws \RangeException if the post content is longer than 1024 characters.
 	 */
@@ -115,20 +115,32 @@ class Post {
 	}
 
 	/**
-	 * @return \DateTime
-	 */
-	public function getQuoteDate(): \DateTime {
-		return $this->quoteDate;
+	 * accessor method for post date.
+	 * @return \DateTime value of postDate
+	 **/
+	public function getPostDate(): \DateTime {
+		return $this->postDate;
 	}
 
 	/**
-	 * @param \DateTime $quoteDate
+	 * mutator method for post date
+	 * @param \DateTime $newPostDate new value for postDate
 	 */
-	public function setQuoteDate(\DateTime $quoteDate): void {
-		$this->quoteDate = $quoteDate;
+	public function setPostDate(\DateTime $newPostDate): void {
+
+		// store the like date using the ValidateDate trait
+		try {
+			$newPostDate = self::ValidateDate($newPostDate);
+		} catch(\InvalidArgumentException | \RangeException $exception) {
+			$exceptionType = get_class($exception);
+			throw(new $exceptionType($exception->getMessage(), 0, $exception));
+		}
+
+		$this->postDate = $newPostDate;
 	}
 
 	/**
+	 *
 	 * @return string
 	 */
 	public function getPostTitle(): string {
