@@ -1,6 +1,7 @@
 <?php
 
 namespace Captains\Interview;
+use Ramsey\Uuid\Uuid;
 
 require_once("autoload.php");
 
@@ -11,6 +12,13 @@ require_once("autoload.php");
 
 class Post implements \JsonSerializable {
 	use ValidateDate;
+	use ValidateUuid;
+
+	/**
+	 * Primary key (uuid v4) for the quote.
+	 * @var \Uuid $postId
+	 */
+	private $postId;
 
 	/**
 	 * author for the quote.
@@ -40,14 +48,21 @@ class Post implements \JsonSerializable {
 	/**
 	 * Post constructor.
 	 *
+	 * @param string|Uuid $newPostId unsanitized uuid v4  passed to the setPostId() method.
 	 * @param string $newPostAuthor unsanitized value passed to the setPostAuthor() method.
 	 * @param string $newPostContent unsanitized value passed to the setPostContent() method.
 	 * @param \DateTime $newPostDate unsanitized value passed to the setPostDate() method.
 	 * @param string $newPostTitle unsanitized value passed to the setPostTitle() method.
+	 * @throws \InvalidArgumentException if data types are not valid
+	 * @throws \RangeException if data values are out of bounds (e.g., strings too long, negative integers)
+	 * @throws \TypeError if data types violate type hints
+	 * @throws \Exception if some other exception occurs
+	 * @Documentation https://php.net/manual/en/language.oop5.decon.php
 	 **/
-	public function __construct( string $newPostAuthor, string $newPostContent, \DateTime $newPostDate, string $newPostTitle ) {
+	public function __construct( $newPostId, string $newPostAuthor, string $newPostContent, \DateTime $newPostDate, string $newPostTitle ) {
 
 		try{
+			$this->setPostId($newPostId);
 			$this->setPostAuthor($newPostAuthor);
 			$this->setPostContent($newPostContent);
 			$this->setPostDate($newPostDate);
@@ -56,6 +71,33 @@ class Post implements \JsonSerializable {
 			$exceptionType = get_class($exception);
 			throw(new $exceptionType($exception->getMessage(), 0, $exception));
 		}
+	}
+
+	/**
+	 * accessor method for postId
+	 * @return \Uuid value of postId
+	 **/
+	public function getPostId(): \Uuid {
+		return $this->postId;
+	}
+
+	/**
+	 * @param $newPostId string|Uuid new uuid v4 value of postId
+	 * @throws \RangeException if $newTweetId is not positive
+	 * @throws \TypeError if $newTweetId is not a uuid or string
+	 * @throws \TypeError if data types violate type hints
+	 * @throws \Exception if some other exception occurs
+	 */
+	public function setPostId( $newPostId): void {
+
+		try {
+			$uuid = self::validateUuid($newPostId);
+		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
+			$exceptionType = get_class($exception);
+			throw(new $exceptionType($exception->getMessage(), 0, $exception));
+		}
+
+		$this->postId = $uuid;
 	}
 
 	/**
@@ -71,6 +113,7 @@ class Post implements \JsonSerializable {
 	 * @param string $newPostAuthor new value for postAuthor.
 	 * @throws \InvalidArgumentException if the postAuthor is empty or insecure.
 	 * @throws \RangeException if the postAuthor is longer than 24 characters.
+	 *
 	 */
 	public function setPostAuthor(string $newPostAuthor): void {
 
@@ -127,13 +170,15 @@ class Post implements \JsonSerializable {
 	 * @param \DateTime $newPostDate new value for postDate
 	 * @throws \InvalidArgumentException if newPostDate is not a valid object
 	 * @throws \RangeException if newPostDate is not a valid datetime
+	 * @throws \TypeError if data types violate type hints
+	 * @throws \Exception if some other exception occurs
 	 *
 	 */
 	public function setPostDate(\DateTime $newPostDate): void {
 
 		// store the like date using the ValidateDate trait
 		try {
-			$newPostDate = self::ValidateDate($newPostDate);
+			$newPostDate = self::ValidateDateTime($newPostDate);
 		} catch(\InvalidArgumentException | \RangeException $exception) {
 			$exceptionType = get_class($exception);
 			throw(new $exceptionType($exception->getMessage(), 0, $exception));
