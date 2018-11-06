@@ -9,7 +9,7 @@ require_once("autoload.php");
  *
  **/
 
-class Post {
+class Post implements \JsonSerializable {
 	use ValidateDate;
 
 	/**
@@ -165,5 +165,16 @@ class Post {
 			throw(new \RangeException("post title is too large"));
 		}
 		$this->postTitle = $newPostTitle;
+	}
+
+	/**
+	 * formats the state variables for JSON serialization
+	 *
+	 * @return array resulting state variables to serialize
+	 **/
+	public function jsonSerialize() {
+		$fields = get_object_vars($this);
+		$fields["postDate"] = round(floatval($this->getPostDate()->format("U.u") * 1000));
+		return($fields);
 	}
 }
