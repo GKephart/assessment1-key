@@ -221,32 +221,19 @@ class Post implements \JsonSerializable {
 		$this->postTitle = $newPostTitle;
 	}
 
+	/**
+	 * inserts the post into mySQL
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError if $pdo is not a PDO connection object
+	 **/
 	public function insert(\PDO $pdo) {
 
 		$query = "INSERT INTO quote(postId, postAuthor, postContent, postDate, postTitle)";
 		$statement = $pdo->prepare($query);
 
 		$parameters = ["postId" => $this->postId->getBytes(), "postAuthor" => $this->postAuthor, "postContent" => $this->postContent, "postDate" => $this->postDate->format("Ymd H:i:s.u"), $this->postTitle];
-		$statement->execute($parameters);
-	}
-
-	public function update(\Pdo $pdo) {
-
-		$query = "UPDATE post SET postId = :postId, postAuthor = :postAuthor,  postContent = :postContent, postDate = : postDate, postTitle = :postTitle";
-		$statement = $pdo->prepare($query);
-
-		$parameters = ["postId" => $this->postId->getBytes(), "postAuthor" => $this->postAuthor, "postContent" => $this->postContent, "postDate" => $this->postDate->format("Ymd H:i:s.u"), $this->postTitle];
-		$statement->execute($parameters);
-	}
-
-	public function delete(\PDO $pdo): void {
-
-		// create query template
-		$query = "DELETE FROM post WHERE postId = :postId";
-		$statement = $pdo->prepare($query);
-
-		// bind the member variables to the place holder in the template
-		$parameters = ["postId" => $this->postId->getBytes()];
 		$statement->execute($parameters);
 	}
 
