@@ -1,6 +1,7 @@
 <?php
 
 namespace Captains\Interview;
+
 use Ramsey\Uuid\Uuid;
 
 require_once("autoload.php");
@@ -9,14 +10,13 @@ require_once("autoload.php");
  * Straight foreword php Class. The class instantiates and is error free .
  *
  **/
-
 class Post implements \JsonSerializable {
 	use ValidateDate;
 	use ValidateUuid;
 
 	/**
 	 * Primary key (uuid v4) for the quote.
-	 * @var \Uuid $postId
+	 * @var Uuid $postId
 	 */
 	private $postId;
 
@@ -59,9 +59,9 @@ class Post implements \JsonSerializable {
 	 * @throws \Exception if some other exception occurs
 	 * @Documentation https://php.net/manual/en/language.oop5.decon.php
 	 **/
-	public function __construct( $newPostId, string $newPostAuthor, string $newPostContent, \DateTime $newPostDate, string $newPostTitle ) {
+	public function __construct($newPostId, string $newPostAuthor, string $newPostContent, \DateTime $newPostDate, string $newPostTitle) {
 
-		try{
+		try {
 			$this->setPostId($newPostId);
 			$this->setPostAuthor($newPostAuthor);
 			$this->setPostContent($newPostContent);
@@ -75,9 +75,9 @@ class Post implements \JsonSerializable {
 
 	/**
 	 * accessor method for postId
-	 * @return \Uuid value of postId
+	 * @return Uuid value of postId
 	 **/
-	public function getPostId(): \Uuid {
+	public function getPostId(): Uuid {
 		return $this->postId;
 	}
 
@@ -88,7 +88,7 @@ class Post implements \JsonSerializable {
 	 * @throws \TypeError if data types violate type hints
 	 * @throws \Exception if some other exception occurs
 	 */
-	public function setPostId( $newPostId): void {
+	public function setPostId($newPostId): void {
 
 		try {
 			$uuid = self::validateUuid($newPostId);
@@ -117,6 +117,8 @@ class Post implements \JsonSerializable {
 	 */
 	public function setPostAuthor(string $newPostAuthor): void {
 
+		$newPostAuthor = trim($newPostAuthor);
+		$newPostAuthor = filter_var($newPostAuthor, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 		if(empty($newPostAuthor) === true) {
 			throw(new \InvalidArgumentException("post author is empty or insecure"));
 		}
@@ -145,6 +147,9 @@ class Post implements \JsonSerializable {
 	 * @throws \RangeException if the postContent is longer than 1024 characters.
 	 */
 	public function setPostContent(string $newPostContent): void {
+
+		$newPostContent = trim($newPostContent);
+		$newPostContent = filter_var($newPostContent, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 
 		if(empty($newPostContent) === true) {
 			throw(new \InvalidArgumentException("post content is empty or insecure"));
@@ -202,6 +207,10 @@ class Post implements \JsonSerializable {
 	 *
 	 */
 	public function setPostTitle(string $newPostTitle): void {
+
+		$newPostTitle = trim($newPostTitle);
+		$newPostTitle = filter_var($newPostTitle, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+
 		if(empty($newPostTitle) === true) {
 			throw(new \InvalidArgumentException("post title is empty or insecure"));
 		}
@@ -212,6 +221,112 @@ class Post implements \JsonSerializable {
 		$this->postTitle = $newPostTitle;
 	}
 
+	public function insert(\PDO $pdo) {
+
+		$query = "INSERT INTO quote(postId, postAuthor, postContent, postDate, postTitle)";
+		$statement = $pdo->prepare($query);
+
+		$parameters = ["postId" => $this->postId->getBytes(), "postAuthor" => $this->postAuthor, "postContent" => $this->postContent, "postDate" => $this->postDate->format("Ymd H:i:s.u"), $this->postTitle];
+		$statement->execute($parameters);
+	}
+
+	public function update(\Pdo $pdo) {
+
+		$query = "UPDATE post SET postId = :postId, postAuthor = :postAuthor,  postContent = :postContent, postDate = : postDate, postTitle = :postTitle";
+		$statement = $pdo->prepare($query);
+
+		$parameters = ["postId" => $this->postId->getBytes(), "postAuthor" => $this->postAuthor, "postContent" => $this->postContent, "postDate" => $this->postDate->format("Ymd H:i:s.u"), $this->postTitle];
+		$statement->execute($parameters);
+	}
+
+	public function delete(\PDO $pdo): void {
+
+		// create query template
+		$query = "DELETE FROM post WHERE postId = :postId";
+		$statement = $pdo->prepare($query);
+
+		// bind the member variables to the place holder in the template
+		$parameters = ["postId" => $this->postId->getBytes()];
+		$statement->execute($parameters);
+	}
+
+	/**
+	 * gets the post by postId
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @param string|Uuid $tweetId tweet id to search for
+	 * @return Post|null Tweet found or null if not found
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError when a variable are not the correct data type
+	 **/
+	public static function getPostByPostId(\PDO $pdo, $postId): ?Post {
+		// sanitize the tweetId before searching
+		try {
+			$postId = self::validateUuid($postId);
+		} catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
+			throw(new \PDOException($exception->getMessage(), 0, $exception));
+		}
+
+		// create query template
+		$query = "SELECT postId, postAuthor, postContent, postDate, postTitle  FROM post WHERE postId = :postId";
+		$statement = $pdo->prepare($query);
+
+		// bind the tweet id to the place holder in the template
+		$parameters = ["postId" => $postId->getBytes()];
+		$statement->execute($parameters);
+
+		// grab the tweet from mySQL
+		try {
+			$post = null;
+			$statement->setFetchMode(\PDO::FETCH_ASSOC);
+			$row = $statement->fetch();
+			if($row !== false) {
+				$post = new Post($row["PostId"], $row["postAuthor"], $row["postContent"], $row["postDate"], $row["postTitle"]);
+			}
+		} catch(\Exception $exception) {
+			// if the row couldn't be converted, rethrow it
+			throw(new \PDOException($exception->getMessage(), 0, $exception));
+		}
+		return ($post);
+	}
+
+	/**
+	 * gets the post by postAuthor
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @param string $postAuthor profile id to search by
+	 * @return \SplFixedArray SplFixedArray of Tweets found
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError when variables are not the correct data type
+	 **/
+	public static function getPostByPostAuthor(\PDO $pdo, string $postAuthor): \SPLFixedArray {
+
+		$postAuthor = trim($postAuthor);
+		$postAuthor = filter_var($postAuthor, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+
+		// create query template
+		$query = "SELECT postId, postAuthor, postContent, postDate, postTitle  FROM post WHERE postAuthor = :postAuthor";
+		$statement = $pdo->prepare($query);
+
+		// bind the tweet profile id to the place holder in the template
+		$parameters = ["postAuthor" => $postAuthor];
+		$statement->execute($parameters);
+		// build an array of tweets
+		$posts = new \SplFixedArray($statement->rowCount());
+		$statement->setFetchMode(\PDO::FETCH_ASSOC);
+		while(($row = $statement->fetch()) !== false) {
+			try {
+				$post = new Post($row["PostId"], $row["postAuthor"], $row["postContent"], $row["postDate"], $row["postTitle"]);
+				$posts[$posts->key()] = $post;
+				$posts->next();
+			} catch(\Exception $exception) {
+				// if the row couldn't be converted, rethrow it
+				throw(new \PDOException($exception->getMessage(), 0, $exception));
+			}
+		}
+		return ($posts);
+	}
+
 	/**
 	 * formats the state variables for JSON serialization
 	 *
@@ -220,6 +335,6 @@ class Post implements \JsonSerializable {
 	public function jsonSerialize() {
 		$fields = get_object_vars($this);
 		$fields["postDate"] = round(floatval($this->getPostDate()->format("U.u") * 1000));
-		return($fields);
+		return ($fields);
 	}
 }
