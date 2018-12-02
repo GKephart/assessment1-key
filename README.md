@@ -1,5 +1,3 @@
-# Captains interview
-
-* Stubbed instructions 
+### Answer Key for the first Assessment.
 
 
