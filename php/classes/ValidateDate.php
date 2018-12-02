@@ -1,5 +1,5 @@
 <?php
-namespace Captains\Interview;
+namespace Gkephart\Assessment;
 /**
  * Trait to Validate a mySQL Date
  *

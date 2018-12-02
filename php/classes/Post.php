@@ -1,6 +1,6 @@
 <?php
 
-namespace GKephart\Assessment;
+namespace Gkephart\Assessment;
 
 use Ramsey\Uuid\Uuid;
 
@@ -59,7 +59,7 @@ class Post implements \JsonSerializable {
 	 * @throws \Exception if some other exception occurs
 	 * @Documentation https://php.net/manual/en/language.oop5.decon.php
 	 **/
-	public function __construct($newPostId, string $newPostAuthor, string $newPostContent, \DateTime $newPostDate, string $newPostTitle) {
+	public function __construct($newPostId, string $newPostAuthor, string $newPostContent, $newPostDate, string $newPostTitle) {
 
 		try {
 			$this->setPostId($newPostId);
@@ -179,7 +179,7 @@ class Post implements \JsonSerializable {
 	 * @throws \Exception if some other exception occurs
 	 *
 	 */
-	public function setPostDate(\DateTime $newPostDate): void {
+	public function setPostDate($newPostDate): void {
 
 		// store the like date using the ValidateDate trait
 		try {
@@ -230,10 +230,10 @@ class Post implements \JsonSerializable {
 	 **/
 	public function insert(\PDO $pdo) {
 
-		$query = "INSERT INTO quote(postId, postAuthor, postContent, postDate, postTitle)";
+		$query = "INSERT INTO post	(postId, postAuthor, postContent, postDate, postTitle)  VALUES (:postId, :postAuthor, :postContent, :postDate, :postTitle)";
 		$statement = $pdo->prepare($query);
 
-		$parameters = ["postId" => $this->postId->getBytes(), "postAuthor" => $this->postAuthor, "postContent" => $this->postContent, "postDate" => $this->postDate->format("Ymd H:i:s.u"), $this->postTitle];
+		$parameters = ["postId" => $this->postId->getBytes(), "postAuthor" => $this->postAuthor, "postContent" => $this->postContent, "postDate" => $this->postDate->format("Y-m-d H:i:s.u"),"postTitle" => $this->postTitle];
 		$statement->execute($parameters);
 	}
 
@@ -268,7 +268,7 @@ class Post implements \JsonSerializable {
 			$statement->setFetchMode(\PDO::FETCH_ASSOC);
 			$row = $statement->fetch();
 			if($row !== false) {
-				$post = new Post($row["PostId"], $row["postAuthor"], $row["postContent"], $row["postDate"], $row["postTitle"]);
+				$post = new Post($row["postId"], $row["postAuthor"], $row["postContent"], $row["postDate"], $row["postTitle"]);
 			}
 		} catch(\Exception $exception) {
 			// if the row couldn't be converted, rethrow it
@@ -303,7 +303,39 @@ class Post implements \JsonSerializable {
 		$statement->setFetchMode(\PDO::FETCH_ASSOC);
 		while(($row = $statement->fetch()) !== false) {
 			try {
-				$post = new Post($row["PostId"], $row["postAuthor"], $row["postContent"], $row["postDate"], $row["postTitle"]);
+				$post = new Post($row["postId"], $row["postAuthor"], $row["postContent"], $row["postDate"], $row["postTitle"]);
+				$posts[$posts->key()] = $post;
+				$posts->next();
+			} catch(\Exception $exception) {
+				// if the row couldn't be converted, rethrow it
+				throw(new \PDOException($exception->getMessage(), 0, $exception));
+			}
+		}
+		return ($posts);
+	}
+
+	/**
+	 * gets the post by postAuthor
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @param string $postAuthor profile id to search by
+	 * @return \SplFixedArray SplFixedArray of Tweets found
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError when variables are not the correct data type
+	 **/
+	public static function getAllPosts(\PDO $pdo) : \SPLFixedArray {
+
+		// create query template
+		$query = "SELECT postId, postAuthor, postContent, postDate, postTitle  FROM post";
+		$statement = $pdo->prepare($query);
+
+		$statement->execute();
+		// build an array of tweets
+		$posts = new \SplFixedArray($statement->rowCount());
+		$statement->setFetchMode(\PDO::FETCH_ASSOC);
+		while(($row = $statement->fetch()) !== false) {
+			try {
+				$post = new Post($row["postId"], $row["postAuthor"], $row["postContent"], $row["postDate"], $row["postTitle"]);
 				$posts[$posts->key()] = $post;
 				$posts->next();
 			} catch(\Exception $exception) {

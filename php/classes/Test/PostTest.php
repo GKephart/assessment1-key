@@ -1,15 +1,18 @@
 <?php
 
-namespace GKephart\Assessment\Test;
+namespace Gkephart\Assessment\Test;
 
-use GKephart\Assessment\AssessmentTest;
-use GKephart\Assessment\Post;
+use Gkephart\Assessment\Post;
 
 // grab the class under scrutiny
 require_once(dirname(__DIR__) . "/autoload.php");
+require_once ("AssessmentTest.php");
 
 // grab the uuid generator
 require_once(dirname(__DIR__, 2) . "/lib/uuid.php");
+require_once(dirname(__DIR__, 3) . "/vendor/autoload.php");
+
+
 
 /**
  * Full PHPUnit test for the Post class
@@ -44,11 +47,11 @@ class PostTest extends AssessmentTest {
 	 * valid post to create the post  object
 	 * @var $VALID_POST_TITLE
 	 */
-	private $VALID_POST_TITLE = "Cant have ";
+	private $VALID_POST_TITLE = "Cant have";
 
-	public final function setUp() {
+	public final function setUp()  : void {
+		// run the default setUp() method first
 		parent::setUp();
-
 		$this->VALID_POST_DATE = new \DateTime();
 	}
 
@@ -57,6 +60,7 @@ class PostTest extends AssessmentTest {
 		$numRows = $this->getConnection()->getRowCount("post");
 
 		$post = new Post(generateUuidV4(), $this->VALID_POST_AUTHOR, $this->VALID_POST_CONTENT, $this->VALID_POST_DATE, $this->VALID_POST_TITLE);
+		var_dump($post);
 		$post->insert($this->getPDO());
 
 		$pdoPost = Post::getPostByPostId($this->getPDO(), $post->getPostId());
@@ -76,10 +80,10 @@ class PostTest extends AssessmentTest {
 		$post = new Post(generateUuidV4(), $this->VALID_POST_AUTHOR, $this->VALID_POST_CONTENT, $this->VALID_POST_DATE, $this->VALID_POST_TITLE);
 		$post->insert($this->getPDO());
 
-		$results = Post::getPostsByPostAuthor($this->getPDO(), $post->getPostId());
+		$results = Post::getPostsByPostAuthor($this->getPDO(), $post->getPostAuthor());
 		$this->assertEquals($numRows + 1, $this->getConnection()->getRowCount("post"));
 		$this->assertCount(1, $results);
-		$this->assertContainsOnlyInstancesOf("GKephar\\Assessment\\Post");
+		$this->assertContainsOnlyInstancesOf("GKephart\\Assessment\\Post", $results);
 
 		$pdoPost = $results[0];
 		$this->assertEquals($numRows + 1, $this->getConnection()->getRowCount("post"));
