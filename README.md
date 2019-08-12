@@ -1,6 +1,7 @@
 ## Answer Key for the first Assessment.
 
-### Example output https://bootcamp-coders.cnm.edu/~gkephart/assessment/php/lib/todo.php
+### Example output  
+* https://bootcamp-coders.cnm.edu/~gkephart/assessment/php/lib/todo.php
 
 ### Rubric
 
