@@ -1,6 +1,6 @@
 {
   "require": {
-    "php": "7.2.*",
+    "php": "*",
     "ext-json": "*",
     "ext-pdo": "*",
     "ramsey/uuid": "@stable",
@@ -9,6 +9,6 @@
     "swiftmailer/swiftmailer": "@stable",
     "lcobucci/jwt": "3.2"
   }, "scripts": {
-    "phpunit": "./vendor/bin/phpunit -c ./php/classes/Test --coverage-html coverage"
+    "phpunit": "./vendor/bin/phpunit -c ./Classes/Test --coverage-html coverage"
   }
 }

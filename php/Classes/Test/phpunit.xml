@@ -1,7 +1,7 @@
 <phpunit>
 	<testsuites>
 		<testsuite name="Assessment Test">
-			<file>PostTest.php</file>
+			<file>TodoTest.php</file>
 		</testsuite>
 	</testsuites>
 	<filter>

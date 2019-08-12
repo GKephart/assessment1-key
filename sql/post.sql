@@ -1,12 +1,11 @@
-DROP TABLE IF EXISTS post;
+DROP TABLE IF EXISTS todo;
 -- the CREATE TABLE function is a function that takes tons of arguments to layout the table's schema
 
 
-CREATE TABLE post (
-	postId BINARY(16) NOT NULL,
-	postAuthor VARCHAR(32),
-	postContent VARCHAR(1024) NOT NULL,
-	postDate  DATETIME(6),
-	postTitle varchar(32),
-	primary key(postId)
+CREATE TABLE todo (
+	todoId BINARY(16) NOT NULL,
+	todoAuthor VARCHAR(32),
+	todoDate  DATETIME(6),
+	todoTask varchar(256),
+	primary key(todoId)
 	);

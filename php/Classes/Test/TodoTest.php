@@ -60,7 +60,6 @@ class TodoTest extends AssessmentTest {
 		$numRows = $this->getConnection()->getRowCount("todo");
 
 		$todo = new Todo(generateUuidV4(), $this->VALID_TODO_AUTHOR, $this->VALID_TODO_DATE, $this->VALID_TODO_TASK);
-		var_dump($todo);
 		$todo->insert($this->getPDO());
 
 		$pdoTodo = Todo::getTodoByTodoId($this->getPDO(), $todo->getTodoId());
@@ -80,9 +79,10 @@ class TodoTest extends AssessmentTest {
 		$todo->insert($this->getPDO());
 
 		$results = Todo::getTodosByTodoAuthor($this->getPDO(), $todo->getTodoAuthor());
+		var_dump($results);
 		$this->assertEquals($numRows + 1, $this->getConnection()->getRowCount("todo"));
 		$this->assertCount(1, $results);
-		$this->assertContainsOnlyInstancesOf("GKephart\\Assessment\\Todo", $results);
+		$this->assertContainsOnlyInstancesOf("Fullstack\\Assessment\\Todo", $results);
 
 		$pdoTodo = $results[0];
 		$this->assertEquals($numRows + 1, $this->getConnection()->getRowCount("todo"));
