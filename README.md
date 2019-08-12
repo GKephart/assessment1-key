@@ -1,5 +1,7 @@
 ## Answer Key for the first Assessment.
 
+### Example output https://bootcamp-coders.cnm.edu/~gkephart/assessment/php/lib/todo.php
+
 ### Rubric
 
 -   **-2.5%** on final grade for each mention of tweet or other noticeable copy pasta_
@@ -11,6 +13,5 @@
 -   10% for  `getFooByBar`  method that returns an array.
 -   10%  `for insert method`
 -   15% for Instantiation and use of objects.
-
 **Total**: 100%
 
