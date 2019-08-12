@@ -1,5 +1,5 @@
 <?php
-namespace Gkephart\Assessment;
+namespace Fullstack\Assessment;
 /**
  * Trait to Validate a mySQL Date
  *

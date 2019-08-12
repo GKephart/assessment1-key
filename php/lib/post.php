@@ -1,6 +1,6 @@
 <?php
 
-require_once("classes/autoload.php");
+require_once("Classes/autoload.php");
 
 use Gkephart\Assessment\Post;
 

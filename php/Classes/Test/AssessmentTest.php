@@ -1,6 +1,6 @@
 <?php
 
-namespace Gkephart\Assessment\Test;
+namespace Fullstack\Assessment\Test;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\DbUnit\TestCaseTrait;
 use PHPUnit\DbUnit\DataSet\QueryDataSet;
